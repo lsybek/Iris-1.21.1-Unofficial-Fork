@@ -1,67 +1,105 @@
-![Iris: An open-source shaders mod compatible with OptiFine shader packs](docs/banner.png)
+# Iris 1.21.1 Unofficial Fork
 
-# Iris
+An unofficial fork of [Iris](https://github.com/IrisShaders/Iris) for **Minecraft 1.21.1 on NeoForge**.
 
-## Links
+This project is intended to provide a 1.21.1-compatible version of Iris for NeoForge, including selected fixes that are not included in the original 1.21.1 release.
 
-* **Visit [our website](https://irisshaders.dev) for downloads and pretty screenshots!**
-* * **Visit [Modrinth](https://modrinth.com/shaders) to find shader packs!**
-* Visit [our Discord server](https://discord.gg/jQJnav2jPu) to chat about the mod and get support! It's also a great place to get development updates right as they're happening.
-* Visit [the developer documentation](https://github.com/IrisShaders/Iris/tree/trunk/docs/development) for information on developing, building, and contributing to Iris!
+> **This is an unofficial project and is not affiliated with, endorsed by, or maintained by the Iris Shaders project.**
 
-## FAQ
+## Current Status
 
-- Find answers to frequently asked questions on our [FAQ page](docs/faq.md).
-- Iris supports almost all shader packs, but a list of unsupported shader packs is available [here](docs/unsupportedshaders.md).
-- A list of unfixable limitations in Iris is available [here](docs/usage/limitations.md).
+This fork targets:
 
-## Why did you make Iris?
+| Component  | Version                     |
+| ---------- | --------------------------- |
+| Minecraft  | **1.21.1**                  |
+| Mod Loader | **NeoForge**                |
+| Project    | Iris                        |
+| Status     | Unofficial / Community Fork |
 
-Iris was created to fill a void that I saw in the Minecraft customization and graphical enhancement community: the lack of an open-source shaders mod that would let me load my favorite shader packs on modern versions of the game, while retaining performance and compatibility with modpacks. OptiFine, the current dominant mod for loading shader packs, has restrictive licensing that firmly stands in the way of any sort of tinkering, and is fairly notorious for having compatibility issues with the mods that I like. It's also mutually incompatible with Sodium, the best rendering optimization mod in existence by a large margin. ShadersMod was never updated past 1.12, and it lacks support for many of the many modern popular shader packs. So I created Iris, to try and solve these issues, and also address many other longstanding issues with shader packs.
+**NeoForge is the only loader currently tested and supported by this fork.**
 
-I first and foremost develop Iris to meet my own needs of a performance-oriented shaders mod with good compatibility and potential for tinkering. Iris when paired with Sodium delivers great performance on my machine, finally making it fully possible for me to actually play with shaders instead of just periodically switching them on to take pretty screenshots, then switching them off once I get tired of frame drops. Of course, as it turns out, I'm far from the only person who benefits from the development of Iris, which is why I've decided to release it to the public as an open-source mod.
+Fabric compatibility has **not been tested or confirmed** and should not be assumed.
 
-Canvas is another shaders mod that has already gained some traction. Its big downside for me, however, is the fact that it doesn't support the existing popular OptiFine shader packs that I want to use. This is because it uses a new format for shader packs that isn't compatible with the existing format, in order to achieve many of its goals for better mod integration with shaders. And while Canvas now has a few nice shaders like Lumi Lights, I still want to have the option of using existing shader packs that were designed for OptiFine. Shader packs just aren't interchangeable, just like how you cannot hand a copy of *The Last Supper* to someone who wants a copy of the *Mona Lisa*. They're both great pieces of art, but you absolutely cannot just swap one out for the other. That being said, if you're a fan of the shader packs available for Canvas, then great! Canvas and Iris are both perfectly fine ways to enjoy shaders with Minecraft.
+## Fixes
 
-## Goals
+### Issue #2813 — Particle Rendering
 
-These are the goals of Iris. Iris hasn't fully achieved all these goals, however we are getting close.
+Fixed the particle rendering issue reported in [IrisShaders/Iris#2813](https://github.com/IrisShaders/Iris/issues/2813).
 
-* **Performance.** Iris should fully utilize your graphics card when paired with optimization mods like Sodium.
-* **Correctness.** Iris should try to be as issueless as possible in its implementation.
-* **Mod compatibility.** Iris should make a best effort to be compatible with modded environments.
-* **Backwards compatibility.** All existing ShadersMod / OptiFine shader packs should just work on Iris, without any modifications required.
-* **Features for shader pack developers.** Once Iris has full support for existing features of the shader pipeline and is reasonably bug free, I wish to expand the horizons of what's possible to do with Minecraft shader packs through the addition of new features to the shader pipeline. Unlimited color buffers, direct voxel data access, and fancy debug HUDs are some examples of features that I'd like to add in the future.
-* **A well-organized codebase.** I'd like for working with Iris code to be a pleasant experience overall.
+This fix is included in the `1.21.1` branch of this fork.
 
+## Purpose
 
-## What's the current state of development?
+Iris has official support for multiple Minecraft versions and mod loaders. This fork focuses specifically on **Minecraft 1.21.1 with NeoForge**.
 
-Iris has public releases for the latest version of Minecraft that work with the official releases of Sodium. Iris is generally usable on most shader packs, and most shader packs are being designed with Iris support in mind.
+The goal is to provide a usable version for players who need to remain on Minecraft 1.21.1 because of modpack compatibility or other dependencies.
 
-However, Iris is still not complete software. Performance can be improved, and more features are being added for shader developers. There are also some minor missing features from OptiFine that make the implementation incomplete.
+This fork is not intended to replace the official Iris project.
 
-## How can I help?
+## Downloads
 
-* The Iris Discord server is looking for people willing to provide support and moderate the server! Go to #applications on our server if you'd like to apply.
-* Code review on open PRs is appreciated! This helps get important issues with PRs resolved before I give them a look.
-* Code contributions through PRs are also welcome! If you're working on a large / significant feature it's usually a good idea to talk about your plans beforehand, to make sure that work isn't wasted.
+For official Iris releases, please visit:
+
+* [Iris Website](https://irisshaders.dev/)
+* [Iris on Modrinth](https://modrinth.com/mod/iris)
+
+Unofficial builds of this fork may be provided separately.
+
+## Original Project
+
+This project is based on **Iris**, an open-source shader mod for Minecraft.
+
+* [Iris GitHub Repository](https://github.com/IrisShaders/Iris)
+* [Iris Website](https://irisshaders.dev/)
+* [Iris on Modrinth](https://modrinth.com/mod/iris)
+* [Iris Discord](https://discord.gg/jQJnav2jPu)
+
+Please refer to the original project for official documentation, support, and current releases.
 
 ## Credits
 
-* **TheOnlyThing and Vaerian**, for creating the excellent logo
-* **Mumfrey**, for creating the Mixin bytecode patching system used by Iris and Sodium internally
-* **The Fabric and Quilt projects**, for enabling the existence of mods like Iris that make many patches to the game
-* **JellySquid**, for creating Sodium, the best rendering optimization mod for Minecraft that currently exists, and for making it open-source
-* **All past, present, and future contributors to Iris**, for helping the project move along
-* **Dr. Rubisco**, for maintaining the website
-* **The Iris support and moderation team**, for handling user support requests and allowing me to focus on developing Iris
-* **daxnitro, karyonix, and sp614x**, for creating and maintaining the current shaders mods
+This project would not exist without the work of the Iris developers and contributors.
+
+Full credit goes to the original Iris project and its contributors for the Iris codebase.
+
+Please see the original repository for the complete list of contributors and credits.
 
 ## License
 
-All code in this (Iris) repository is completely free and open source, and you are free to read, distribute, and modify the code as long as you abide by the (fairly reasonable) terms of the [GNU LGPLv3 license](https://github.com/IrisShaders/Iris/blob/master/LICENSE).
+Iris is licensed under the **GNU LGPLv3**.
 
-glsl-transformer is licensed under the GNU Affero General Public License version 3. This may affect your ability to distribute Iris.
+Please refer to the [LICENSE](LICENSE) file and the original Iris repository for complete licensing information.
 
-Though it's not legally required, I'd appreciate it if you could ask before hosting your own public downloads for compiled versions of Iris. Though if you want to add the mod to a site like MCBBS, that's fine, no need to ask me.
+`glsl-transformer` is licensed under the **GNU Affero General Public License version 3**. This may affect your ability to distribute compiled versions of Iris.
+
+This repository is an unofficial fork and is not affiliated with or endorsed by the Iris Shaders project.
+
+
+## Credits
+
+This project is based on [Iris](https://github.com/IrisShaders/Iris) and would not be possible without the work of the original Iris developers and contributors.
+
+The original Iris project credits the following contributors and projects:
+
+* **TheOnlyThing and Vaerian**, for creating the Iris logo
+* **Mumfrey**, for creating the Mixin bytecode patching system used by Iris and Sodium
+* **The Fabric and Quilt projects**, for enabling mods such as Iris
+* **JellySquid**, for creating Sodium and making it open-source
+* **All past, present, and future contributors to Iris**, for contributing to the project
+* **Dr. Rubisco**, for maintaining the Iris website
+* **The Iris support and moderation team**, for providing user support
+* **daxnitro, karyonix, and sp614x**, for creating and maintaining shader mods
+
+Please see the [original Iris repository](https://github.com/IrisShaders/Iris) for the complete and up-to-date list of credits.
+
+## License
+
+This project is based on Iris and is distributed under the same licensing terms as the original project.
+
+The Iris source code is licensed under the **GNU Lesser General Public License v3 (LGPLv3)**. See the [LICENSE](LICENSE) file for the full license text.
+
+`glsl-transformer` is licensed under the **GNU Affero General Public License v3 (AGPLv3)**. This may affect the distribution of compiled versions of Iris.
+
+Please refer to the original [Iris repository](https://github.com/IrisShaders/Iris) for additional licensing information.
+
