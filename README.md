@@ -25,7 +25,7 @@ Fabric compatibility has **not been tested or confirmed** and should not be assu
 
 ### Issue #2813 — Particle Rendering
 
-Fixed the particle rendering issue reported in [IrisShaders/Iris#2813](https://github.com/IrisShaders/Iris/issues/2813).
+Fixed the particle rendering issue reported in [IrisShaders/Iris#2813](https://github.com/IrisShaders/Iris).
 
 This fix is included in the `1.21.1` branch of this fork.
 
@@ -59,36 +59,17 @@ Please refer to the original project for official documentation, support, and cu
 
 ## Credits
 
-This project would not exist without the work of the Iris developers and contributors.
-
-Full credit goes to the original Iris project and its contributors for the Iris codebase.
-
-Please see the original repository for the complete list of contributors and credits.
-
-## License
-
-Iris is licensed under the **GNU LGPLv3**.
-
-Please refer to the [LICENSE](LICENSE) file and the original Iris repository for complete licensing information.
-
-`glsl-transformer` is licensed under the **GNU Affero General Public License version 3**. This may affect your ability to distribute compiled versions of Iris.
-
-This repository is an unofficial fork and is not affiliated with or endorsed by the Iris Shaders project.
-
-
-## Credits
-
-This project is based on [Iris](https://github.com/IrisShaders/Iris) and would not be possible without the work of the original Iris developers and contributors.
+This project would not exist without the work of the original Iris developers and contributors.
 
 The original Iris project credits the following contributors and projects:
 
-* **TheOnlyThing and Vaerian**, for creating the Iris logo
-* **Mumfrey**, for creating the Mixin bytecode patching system used by Iris and Sodium
-* **The Fabric and Quilt projects**, for enabling mods such as Iris
+* **TheOnlyThing and Vaerian**, for creating the excellent Iris logo
+* **Mumfrey**, for creating the Mixin bytecode patching system used by Iris and Sodium internally
+* **The Fabric and Quilt projects**, for enabling the existence of mods like Iris that make many patches to the game
 * **JellySquid**, for creating Sodium and making it open-source
-* **All past, present, and future contributors to Iris**, for contributing to the project
+* **All past, present, and future contributors to Iris**, for helping the project move along
 * **Dr. Rubisco**, for maintaining the Iris website
-* **The Iris support and moderation team**, for providing user support
+* **The Iris support and moderation team**, for handling user support requests
 * **daxnitro, karyonix, and sp614x**, for creating and maintaining shader mods
 
 Please see the [original Iris repository](https://github.com/IrisShaders/Iris) for the complete and up-to-date list of credits.
@@ -101,5 +82,6 @@ The Iris source code is licensed under the **GNU Lesser General Public License v
 
 `glsl-transformer` is licensed under the **GNU Affero General Public License v3 (AGPLv3)**. This may affect the distribution of compiled versions of Iris.
 
-Please refer to the original [Iris repository](https://github.com/IrisShaders/Iris) for additional licensing information.
+Please refer to the [original Iris repository](https://github.com/IrisShaders/Iris) for additional licensing information.
 
+This repository is an unofficial fork and is not affiliated with, endorsed by, or maintained by the Iris Shaders project.
