@@ -4,22 +4,24 @@ license = "LGPL-3.0-only"
 
 [[mods]]
 modId = "iris"
-
 version = "${version}"
-displayName = "Iris"
+displayName = "Iris Shaders - Unofficial 92d421c BackPort"
 
 logoFile = "iris-logo.png" #optional
 
-authors = "coderbot, IMS212"
+authors = "lsybek (Original by coderbot, IMS212)"
 
 description = '''
-Iris is a modern shaders mod for Minecraft intended to be compatible with existing OptiFine shader packs.
+An unofficial backport of commit 92d421c for Iris Shaders.
+Fixes particle rendering/blur issues in Minecraft 1.21.1.
+
+Original mod by coderbot and IMS212.
 '''
 
 [[dependencies.iris]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21,1.21.1)"
+versionRange = "[1.21,1.21.1]"
 ordering = "NONE"
 side = "CLIENT"
 
@@ -50,7 +52,7 @@ config = "mixins.iris.forge.json"
 [[dependencies.iris]]
 modId = "embeddium"
 type = "incompatible"
-reason = "Iris and Embeddium cannot be used together. Please use Sodium 0.8 instead."
+reason = "Iris and Embeddium cannot be used together. Please use Sodium 0.6+ instead."
 versionRange = "[0.0.1,)"
 ordering = "NONE"
 side = "CLIENT"

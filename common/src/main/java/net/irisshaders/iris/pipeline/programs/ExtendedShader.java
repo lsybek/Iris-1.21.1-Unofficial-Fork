@@ -116,17 +116,22 @@ public class ExtendedShader extends ShaderInstance implements ShaderInstanceInte
 		GLDebug.nameObject(KHRDebug.GL_PROGRAM, this.getId(), name);
 	}
 
-	@Override
-	public void clear() {
-		ProgramUniforms.clearActiveUniforms();
-		ProgramSamplers.clearActiveSamplers();
+@Override
+    public void clear() {
+        ProgramUniforms.clearActiveUniforms();
+        ProgramSamplers.clearActiveSamplers();
 
-		if (this.blendModeOverride != null || hasOverrides) {
-			BlendModeOverride.restore();
-		}
+        if (intensitySwizzle) {
+            IrisRenderSystem.texParameteriv(RenderSystem.getShaderTexture(0), TextureType.TEXTURE_2D.getGlType(),
+                    ARBTextureSwizzle.GL_TEXTURE_SWIZZLE_RGBA, new int[]{GL30C.GL_RED, GL30C.GL_GREEN, GL30C.GL_BLUE, GL30C.GL_ALPHA});
+        }
 
-		Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-	}
+        if (this.blendModeOverride != null || hasOverrides) {
+            BlendModeOverride.restore();
+        }
+
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+    }
 
 	@Override
 	public void apply() {

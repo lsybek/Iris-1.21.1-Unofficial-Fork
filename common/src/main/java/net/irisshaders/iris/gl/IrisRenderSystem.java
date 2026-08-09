@@ -29,6 +29,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
+
 /**
  * This class is responsible for abstracting calls to OpenGL and asserting that calls are run on the render thread.
  */
@@ -42,6 +45,8 @@ public class IrisRenderSystem {
 	private static int polygonMode = GL43C.GL_FILL;
 	private static int backupPolygonMode = GL43C.GL_FILL;
 	private static int[] samplers;
+
+	private static final IntStack TEXTURE_STACK = new IntArrayList();
 
 	public static void initRenderer() {
 		if (GL.getCapabilities().OpenGL45) {
@@ -357,9 +362,11 @@ public class IrisRenderSystem {
 		return dsaState.createTexture(target);
 	}
 
-	public static void bindTextureForSetup(int glType, int glId) {
-		GL30C.glBindTexture(glType, glId);
-	}
+public static void bindTextureForSetup(int glType, int glId) {
+        int previousTexture = GlStateManager._getBoundTexture();
+        GlStateManager._bindTexture(glId);
+        GlStateManager._bindTexture(previousTexture);
+    }
 
 	public static boolean supportsCompute() {
 		return supportsCompute;
