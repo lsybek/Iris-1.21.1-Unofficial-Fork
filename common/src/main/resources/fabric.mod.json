@@ -3,7 +3,7 @@
   "id": "iris",
   "version": "${version}",
   "name": "Iris",
-  "description": "A modern shaders mod for Minecraft intended to be compatible with existing OptiFine shader packs",
+  "description": "A modern shaders mod for Minecraft intended to be compatible with existing OptiFine shader packs. Unofficial fork: https://github.com/lsybek/Iris-1.21.1-Unofficial-Fork",
   "authors": [
     "coderbot",
     "IMS212",
@@ -11,9 +11,9 @@
     "FoundationGames"
   ],
   "contact": {
-    "homepage": "https://github.com/IrisShaders/Iris",
-    "sources": "https://github.com/IrisShaders/Iris.git",
-    "issues": "https://github.com/IrisShaders/Iris/issues"
+    "homepage": "https://github.com/lsybek/Iris-1.21.1-Unofficial-Fork",
+    "sources": "https://github.com/lsybek/Iris-1.21.1-Unofficial-Fork",
+    "issues": "https://github.com/lsybek/Iris-1.21.1-Unofficial-Fork/issues"
   },
   "license": "LGPL-3.0-only",
   "icon": "assets/iris/textures/gui/iris-logo.png",
