@@ -6,6 +6,8 @@ import net.irisshaders.iris.gl.IrisRenderSystem;
 import net.irisshaders.iris.gl.framebuffer.GlFramebuffer;
 import net.irisshaders.iris.gl.texture.DepthBufferFormat;
 import net.irisshaders.iris.gl.texture.DepthCopyStrategy;
+import net.irisshaders.iris.gl.texture.InternalTextureFormat;
+import net.irisshaders.iris.gl.texture.PixelType;
 import net.irisshaders.iris.shaderpack.properties.PackDirectives;
 import net.irisshaders.iris.shaderpack.properties.PackRenderTargetDirectives;
 import org.joml.Vector2i;
@@ -55,8 +57,6 @@ public class RenderTargets {
 
 		this.ownedFramebuffers = new ArrayList<>();
 
-		// NB: Make sure all buffers are cleared so that they don't contain undefined
-		// data. Otherwise very weird things can happen.
 		fullClearRequired = true;
 
 		this.depthSourceFb = createFramebufferWritingToMain(new int[]{0});
@@ -122,10 +122,23 @@ public class RenderTargets {
 	private void create(int index) {
 		PackRenderTargetDirectives.RenderTargetSettings settings = targetSettingsMap.get(index);
 		Vector2i dimensions = packDirectives.getTextureScaleOverride(index, cachedWidth, cachedHeight);
+		InternalTextureFormat fmt = settings.getInternalFormat();
+		PixelType type = PixelType.UNSIGNED_BYTE;
+
+		if (fmt == InternalTextureFormat.R11F_G11F_B10F) {
+			type = PixelType.UNSIGNED_INT_10F_11F_11F_REV;
+		} else if (fmt == InternalTextureFormat.RGB9_E5) {
+			type = PixelType.UNSIGNED_INT_5_9_9_9_REV;
+		} else if (fmt == InternalTextureFormat.R16F || fmt == InternalTextureFormat.RG16F || fmt == InternalTextureFormat.RGB16F || fmt == InternalTextureFormat.RGBA16F) {
+			type = PixelType.HALF_FLOAT;
+		} else if (fmt == InternalTextureFormat.R32F || fmt == InternalTextureFormat.RG32F || fmt == InternalTextureFormat.RGB32F || fmt == InternalTextureFormat.RGBA32F) {
+			type = PixelType.FLOAT;
+		}
 		targets[index] = RenderTarget.builder().setDimensions(dimensions.x, dimensions.y)
 			.setName("colortex" + index)
-			.setInternalFormat(settings.getInternalFormat())
-			.setPixelFormat(settings.getInternalFormat().getPixelFormat()).build();
+			.setInternalFormat(fmt)
+			.setPixelFormat(fmt.getPixelFormat())
+			.setPixelType(type).build();
 	}
 
 	public int getDepthTexture() {
@@ -157,22 +170,15 @@ public class RenderTargets {
 
 		if (depthFormatChanged) {
 			currentDepthFormat = newDepthFormat;
-			// Might need a new copy strategy
+
 			copyStrategy = DepthCopyStrategy.fastest(currentDepthFormat.isCombinedStencil());
 		}
 
 		if (recreateDepth) {
-			// Re-attach the depth textures with the new depth texture ID, since Minecraft re-creates
-			// the depth texture when resizing its render targets.
-			//
-			// I'm not sure if our framebuffers holding on to the old depth texture between frames
-			// could be a concern, in the case of resizing and similar. I think it should work
-			// based on what I've seen of the spec, though - it seems like deleting a texture
-			// automatically detaches it from its framebuffers.
+
 			for (GlFramebuffer framebuffer : ownedFramebuffers) {
 				if (framebuffer == noHandDestFb || framebuffer == noTranslucentsDestFb) {
-					// NB: Do not change the depth attachment of these framebuffers
-					// as it is intentionally different
+
 					continue;
 				}
 
@@ -183,7 +189,7 @@ public class RenderTargets {
 		}
 
 		if (depthFormatChanged || sizeChanged) {
-			// Reallocate depth buffers
+
 			noTranslucents.resize(newWidth, newHeight, newDepthFormat);
 			noHand.resize(newWidth, newHeight, newDepthFormat);
 			this.translucentDepthDirty = true;
@@ -274,8 +280,6 @@ public class RenderTargets {
 
 		framebuffer.addDepthAttachment(currentDepthTexture);
 
-		// NB: Before OpenGL 3.0, all framebuffers are required to have a color
-		// attachment no matter what.
 		framebuffer.addColorAttachment(0, getOrCreate(0).getMainTexture());
 		framebuffer.noDrawBuffers();
 
@@ -291,7 +295,6 @@ public class RenderTargets {
 
 		return createColorFramebuffer(stageWritesToMain, drawBuffers);
 	}
-
 
 	public GlFramebuffer createGbufferFramebuffer(ImmutableSet<Integer> stageWritesToAlt, int[] drawBuffers) {
 		if (drawBuffers.length == 0) {
@@ -324,7 +327,9 @@ public class RenderTargets {
 	public GlFramebuffer createColorFramebufferWithDepth(ImmutableSet<Integer> stageWritesToMain, int[] drawBuffers) {
 		GlFramebuffer framebuffer = createColorFramebuffer(stageWritesToMain, drawBuffers);
 
-		framebuffer.addDepthAttachment(currentDepthTexture);
+		if (currentDepthTexture != 0) {
+			framebuffer.addDepthAttachment(currentDepthTexture);
+		}
 
 		return framebuffer;
 	}
@@ -343,7 +348,7 @@ public class RenderTargets {
 			actualDrawBuffers[i] = i;
 
 			if (drawBuffers[i] >= getRenderTargetCount()) {
-				// TODO: This causes resource leaks, also we should really verify this in the shaderpack parser...
+
 				framebuffer.destroy();
 				ownedFramebuffers.remove(framebuffer);
 				throw new IllegalStateException("Render target with index " + drawBuffers[i] + " is not supported, only "
@@ -359,7 +364,6 @@ public class RenderTargets {
 
 		framebuffer.drawBuffers(actualDrawBuffers);
 		framebuffer.readBuffer(0);
-
 
 		int status = framebuffer.getStatus();
 		if (status != GL30C.GL_FRAMEBUFFER_COMPLETE) {

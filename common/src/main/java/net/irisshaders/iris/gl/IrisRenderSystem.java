@@ -32,9 +32,6 @@ import java.nio.IntBuffer;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-/**
- * This class is responsible for abstracting calls to OpenGL and asserting that calls are run on the render thread.
- */
 public class IrisRenderSystem {
 	private static final int[] emptyArray = new int[SamplerLimits.get().getMaxTextureUnits()];
 	private static Matrix4f backupProjection;
@@ -90,20 +87,26 @@ public class IrisRenderSystem {
 
 	public static void texImage1D(int texture, int target, int level, int internalformat, int width, int border, int format, int type, @Nullable ByteBuffer pixels) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		IrisRenderSystem.bindTextureForSetup(target, texture);
+		int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+		GlStateManager._bindTexture(texture);
 		GL30C.glTexImage1D(target, level, internalformat, width, border, format, type, pixels);
+		GlStateManager._bindTexture(previous);
 	}
 
 	public static void texImage2D(int texture, int target, int level, int internalformat, int width, int height, int border, int format, int type, @Nullable ByteBuffer pixels) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		IrisRenderSystem.bindTextureForSetup(target, texture);
+		int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+		GlStateManager._bindTexture(texture);
 		GL32C.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+		GlStateManager._bindTexture(previous);
 	}
 
 	public static void texImage3D(int texture, int target, int level, int internalformat, int width, int height, int depth, int border, int format, int type, @Nullable ByteBuffer pixels) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		IrisRenderSystem.bindTextureForSetup(target, texture);
+		int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+		GlStateManager._bindTexture(texture);
 		GL30C.glTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+		GlStateManager._bindTexture(previous);
 	}
 
 	public static void uniformMatrix4fv(int location, boolean transpose, FloatBuffer matrix) {
@@ -156,9 +159,6 @@ public class IrisRenderSystem {
 		dsaState.texParameteriv(texture, target, pname, params);
 	}
 
-	/**
-	 * Internal API for use when you don't know the target texture. Should use {@link IrisRenderSystem#texParameteriv(int, int, int, int[])} instead unless you know what you're doing!
-	 */
 	public static void texParameterivDirect(int target, int pname, int[] params) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GL32C.glTexParameteriv(target, pname, params);
@@ -220,7 +220,7 @@ public class IrisRenderSystem {
 
 	public static void bufferStorage(int target, long size, int flags) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		// The ARB version is identical to GL44 and redirects, so this should work on ARB as well.
+
 		GL45C.glBufferStorage(target, size, flags);
 	}
 
@@ -324,8 +324,6 @@ public class IrisRenderSystem {
 		ARBDrawBuffersBlend.glBlendFuncSeparateiARB(buffer, srcRGB, dstRGB, srcAlpha, dstAlpha);
 	}
 
-	// These functions are deprecated and unavailable in the core profile.
-
 	public static void bindTextureToUnit(int target, int unit, int texture) {
 		dsaState.bindTextureToUnit(target, unit, texture);
 	}
@@ -362,11 +360,9 @@ public class IrisRenderSystem {
 		return dsaState.createTexture(target);
 	}
 
-public static void bindTextureForSetup(int glType, int glId) {
-        int previousTexture = GlStateManager._getBoundTexture();
-        GlStateManager._bindTexture(glId);
-        GlStateManager._bindTexture(previousTexture);
-    }
+	public static void bindTextureForSetup(int glType, int glId) {
+		GlStateManager._bindTexture(glId);
+	}
 
 	public static boolean supportsCompute() {
 		return supportsCompute;
@@ -407,7 +403,6 @@ public static void bindTextureForSetup(int glType, int glId) {
 			GL45C.glBindSamplers(0, emptyArray);
 		}
 	}
-
 
 	public static void samplerParameteri(int sampler, int pname, int param) {
 		GL33C.glSamplerParameteri(sampler, pname, param);
@@ -561,7 +556,6 @@ public static void bindTextureForSetup(int glType, int glId) {
 
 			ARBDirectStateAccess.glBindTextureUnit(unit, texture);
 
-			// Manually fix GLStateManager bindings...
 			GlStateManagerAccessor.getTEXTURES()[unit].binding = texture;
 		}
 
@@ -601,26 +595,34 @@ public static void bindTextureForSetup(int glType, int glId) {
 	public static class DSAUnsupported implements DSAAccess {
 		@Override
 		public void generateMipmaps(int texture, int target) {
+			int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
 			GlStateManager._bindTexture(texture);
 			GL32C.glGenerateMipmap(target);
+			GlStateManager._bindTexture(previous);
 		}
 
 		@Override
 		public void texParameteri(int texture, int target, int pname, int param) {
-			bindTextureForSetup(target, texture);
+			int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+			GlStateManager._bindTexture(texture);
 			GL32C.glTexParameteri(target, pname, param);
+			GlStateManager._bindTexture(previous);
 		}
 
 		@Override
 		public void texParameterf(int texture, int target, int pname, float param) {
-			bindTextureForSetup(target, texture);
+			int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+			GlStateManager._bindTexture(texture);
 			GL32C.glTexParameterf(target, pname, param);
+			GlStateManager._bindTexture(previous);
 		}
 
 		@Override
 		public void texParameteriv(int texture, int target, int pname, int[] params) {
-			bindTextureForSetup(target, texture);
+			int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+			GlStateManager._bindTexture(texture);
 			GL32C.glTexParameteriv(target, pname, params);
+			GlStateManager._bindTexture(previous);
 		}
 
 		@Override
@@ -637,8 +639,11 @@ public static void bindTextureForSetup(int glType, int glId) {
 
 		@Override
 		public int getTexParameteri(int texture, int target, int pname) {
-			bindTextureForSetup(target, texture);
-			return GL32C.glGetTexParameteri(target, pname);
+			int previous = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
+			GlStateManager._bindTexture(texture);
+			int result = GL32C.glGetTexParameteri(target, pname);
+			GlStateManager._bindTexture(previous);
+			return result;
 		}
 
 		@Override
@@ -700,22 +705,4 @@ public static void bindTextureForSetup(int glType, int glId) {
 		}
 	}
 
-		/*
-	public static void bindTextures(int startingTexture, int[] bindings) {
-		if (hasMultibind) {
-			ARBMultiBind.glBindTextures(startingTexture, bindings);
-		} else if (dsaState != DSAState.NONE) {
-			for (int binding : bindings) {
-				ARBDirectStateAccess.glBindTextureUnit(startingTexture, binding);
-				startingTexture++;
-			}
-		} else {
-			for (int binding : bindings) {
-				GlStateManager._activeTexture(startingTexture);
-				GlStateManager._bindTexture(binding);
-				startingTexture++;
-			}
-		}
-	}
-	 */
 }

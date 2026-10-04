@@ -10,6 +10,7 @@ import net.irisshaders.iris.gl.sampler.GlSampler;
 import net.irisshaders.iris.gl.texture.DepthBufferFormat;
 import net.irisshaders.iris.gl.texture.DepthCopyStrategy;
 import net.irisshaders.iris.gl.texture.InternalTextureFormat;
+import net.irisshaders.iris.gl.texture.PixelType;
 import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import net.irisshaders.iris.shaderpack.properties.PackShadowDirectives;
 import net.irisshaders.iris.targets.DepthTexture;
@@ -62,8 +63,6 @@ public class ShadowRenderTargets {
 			this.linearFiltered[i] = !shadowDirectives.getDepthSamplingSettings().get(i).getNearest();
 		}
 
-		// NB: Make sure all buffers are cleared so that they don't contain undefined
-		// data. Otherwise very weird things can happen.
 		fullClearRequired = true;
 
 		this.depthSourceFb = createFramebufferWritingToMain(new int[]{0});
@@ -75,7 +74,6 @@ public class ShadowRenderTargets {
 		boolean shouldRefresh = false;
 	}
 
-	// TODO: Actually flip. This is required for shadow composites!
 	public void flip(int target) {
 		flipped[target] = !flipped[target];
 	}
@@ -107,13 +105,6 @@ public class ShadowRenderTargets {
 		return targets[index];
 	}
 
-	/**
-	 * Gets the render target assigned to an index, and creates it if it does not exist.
-	 * This is a <b>expensive</b> opetation nad may block other tasks! Use it sparingly, and use {@code get()} if possible.
-	 *
-	 * @param index The index of the render target to get
-	 * @return The existing or a new render target, if no existing one exists
-	 */
 	public RenderTarget getOrCreate(int index) {
 		if (targets[index] != null) {
 			return targets[index];
@@ -128,12 +119,23 @@ public class ShadowRenderTargets {
 			throw new IllegalStateException("Tried to access buffer higher than allowed limit of " + size + "! If you're trying to use shadowcolor2-7, you need to activate it's feature flag!");
 		}
 
-
 		PackShadowDirectives.SamplingSettings settings = shadowDirectives.getColorSamplingSettings().computeIfAbsent(index, i -> new PackShadowDirectives.SamplingSettings());
+		InternalTextureFormat fmt = settings.getFormat();
+		PixelType type = PixelType.UNSIGNED_BYTE;
+		if (fmt == InternalTextureFormat.R11F_G11F_B10F) {
+			type = PixelType.UNSIGNED_INT_10F_11F_11F_REV;
+		} else if (fmt == InternalTextureFormat.RGB9_E5) {
+			type = PixelType.UNSIGNED_INT_5_9_9_9_REV;
+		} else if (fmt == InternalTextureFormat.R16F || fmt == InternalTextureFormat.RG16F || fmt == InternalTextureFormat.RGB16F || fmt == InternalTextureFormat.RGBA16F) {
+			type = PixelType.HALF_FLOAT;
+		} else if (fmt == InternalTextureFormat.R32F || fmt == InternalTextureFormat.RG32F || fmt == InternalTextureFormat.RGB32F || fmt == InternalTextureFormat.RGBA32F) {
+			type = PixelType.FLOAT;
+		}
 		targets[index] = RenderTarget.builder().setDimensions(resolution, resolution)
-			.setInternalFormat(settings.getFormat())
+			.setInternalFormat(fmt)
 			.setName("shadowcolor" + index)
-			.setPixelFormat(settings.getFormat().getPixelFormat()).build();
+			.setPixelFormat(fmt.getPixelFormat())
+			.setPixelType(type).build();
 		formats[index] = settings.getFormat();
 		if (settings.getClear()) {
 			buffersToBeCleared.add(index);
@@ -215,8 +217,6 @@ public class ShadowRenderTargets {
 
 		framebuffer.addDepthAttachment(mainDepth.getTextureId());
 
-		// NB: Before OpenGL 3.0, all framebuffers are required to have a color
-		// attachment no matter what.
 		framebuffer.addColorAttachment(0, get(0).getMainTexture());
 		framebuffer.noDrawBuffers();
 
@@ -287,9 +287,7 @@ public class ShadowRenderTargets {
 			actualDrawBuffers[i] = i;
 
 			if (drawBuffers[i] >= getRenderTargetCount()) {
-				// If a shader is using an invalid drawbuffer, they're most likely relying on the Optifine behavior of ignoring DRAWBUFFERS in the shadow pass.
-				// We need to fix this for them, since apparantly this is a common issue.
-				// Iris.logger.warn("Invalid framebuffer was attempted to be created! Forcing a framebuffer with DRAWBUFFERS 01 for shadow.");
+
 				ownedFramebuffers.remove(framebuffer);
 				framebuffer.destroy();
 				return createColorFramebuffer(stageWritesToMain, new int[]{0, 1});

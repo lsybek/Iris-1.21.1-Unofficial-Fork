@@ -6,6 +6,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     maven("https://maven.caffeinemc.net/releases")
 
     maven("https://maven.parchmentmc.org/")
@@ -134,7 +135,8 @@ tasks {
     }
 
     jar {
-        from(rootDir.resolve("LICENSE.md"))
+        from(rootDir.resolve("LICENSE"))
+        from(rootDir.resolve("NOTICE"))
 
         val vendored = sourceSets.getByName("vendored")
         from(vendored.output.classesDirs)

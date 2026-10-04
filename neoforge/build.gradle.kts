@@ -18,6 +18,7 @@ sourceSets {
 }
 
 repositories {
+    mavenLocal()
     maven("https://maven.su5ed.dev/releases")
     maven("https://maven.caffeinemc.net/releases")
     maven("https://maven.neoforged.net/releases/")
@@ -37,7 +38,8 @@ repositories {
 
 tasks.jar {
 
-    from(rootDir.resolve("LICENSE.md"))
+    from(rootDir.resolve("LICENSE"))
+    from(rootDir.resolve("NOTICE"))
 
     filesMatching("neoforge.mods.toml") {
         expand(mapOf("version" to MOD_VERSION))
